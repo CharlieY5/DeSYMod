@@ -64,9 +64,18 @@ class FusionClassifier(nn.Module):
         return final_score, first_layer_output
 
 class VideoAIDetector:
-    def __init__(self):
+    def __init__(self, threshold=0.4238):
+        """
+        初始化AI视频检测器
+        Args:
+            threshold: 分类阈值，默认0.4238（基于ROC曲线分析的最优F1分数阈值）
+                      可选值：
+                      - 0.4238: 最优F1分数，高召回率
+                      - 0.5423: 最优准确率，平衡性能
+                      - 0.5: 传统阈值
+        """
         self.model = FusionClassifier()
-        self.threshold = 0.5
+        self.threshold = threshold
         
     def detect(self, video_path, audio, text):
         score, confidence = self.model.forward(video_path, audio, text)
@@ -126,7 +135,11 @@ if __name__ == "__main__":
         force_extract=False
     )
     print("train_loader size:", len(train_loader.dataset))
-    detector = VideoAIDetector()
+    
+    # 使用基于ROC曲线分析的最优阈值
+    detector = VideoAIDetector(threshold=0.4238)
+    print(f"使用最优阈值: {detector.threshold}")
+    
     test_fusion_classifier(detector, train_loader, device, save_csv_path="results/fusion_test_results.csv")
 
 # 新增可视化脚本入口

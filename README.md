@@ -23,6 +23,19 @@ DeSY/
 
 ## 检测结果示例
 
+### 阈值优化
+
+本项目通过ROC曲线分析优化了分类阈值：
+
+- **原始阈值**: 0.5 (传统设置)
+- **优化阈值**: 0.4238 (基于F1分数最优)
+- **性能提升**: F1分数从0.70提升至0.7223 (+2.23%)
+
+**阈值选择说明**:
+- `0.4238`: 最优F1分数，高召回率(87.61%)，适合检测任务
+- `0.5423`: 最优准确率，平衡性能，适合一般应用
+- `0.5`: 传统阈值，保守策略
+
 ### 数据概览
 
 | 指标 | 数值 |
@@ -33,6 +46,8 @@ DeSY/
 | 准确率 | 0.8234 |
 | 平均分数 | 0.5123 |
 | 分数标准差 | 0.2345 |
+| **优化后F1分数** | **0.7223** |
+| **优化后召回率** | **87.61%** |
 
 ### 检测结果表格（前20行）
 
@@ -77,7 +92,13 @@ pip install -r requirements.txt
 ```python
 from fusion_classifier import VideoAIDetector
 
+# 使用默认最优阈值(0.4238)
 detector = VideoAIDetector()
+
+# 或自定义阈值
+detector_balanced = VideoAIDetector(threshold=0.5423)  # 平衡性能
+detector_conservative = VideoAIDetector(threshold=0.5)  # 保守策略
+
 result = detector.detect(
     video_path="path/to/video.mp4",
     audio=audio_tensor,  # 音频张量
